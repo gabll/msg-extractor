@@ -189,6 +189,8 @@ class Attachment:
             filename = 'UnknownFilename ' + \
                 ''.join(random.choice(string.ascii_uppercase + string.digits)
                         for _ in range(5)) + ".bin"
+        if os.path.exists(os.path.join(os.getcwd() + '/' + filename)):
+            filename = 'Copy of ' + filename
         f = open(filename, 'wb')
         f.write(self.data)
         f.close()
@@ -428,7 +430,7 @@ class Message(OleFile.OleFileIO):
                 f.write("Date: " + xstr(self.date) + "\n")
                 f.write("-----------------\n\n")
                 f.write(self.body)
-                
+
             f.close()
 
         except Exception:
@@ -488,6 +490,14 @@ class Message(OleFile.OleFileIO):
             if dir_[-1].endswith('001E'):  # FIXME: Check for unicode 001F too
                 print("Directory: " + str(dir))
                 print("Contents: " + self._getStream(dir))
+
+    def simple_save(self, raw=False):
+        """save only the attachments in the same folder"""
+        attachmentNames = []
+        # Save the attachments
+        for attachment in self.attachments:
+            attachmentNames.append(attachment.save())
+
 
 
 if __name__ == "__main__":
